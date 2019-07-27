@@ -1,22 +1,29 @@
 package com.mobiquityinc.packer;
 
-import com.mobiquityinc.domain.Constraints;
-import com.mobiquityinc.domain.PackageItem;
-import com.mobiquityinc.domain.Result;
+import com.mobiquityinc.domain.*;
 import com.mobiquityinc.exception.APIException;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class PackerTest {
+
+    private MaxCostPackageFinder maxCostPackageFinder = new DPMaxCostPackageFinder();
+
+    @Test
+    void filesDoesNotExistThrowsException() {
+        try {
+            Packer.pack("src/test/resources/samples/input/invalid_file.txt");
+            fail();
+        } catch (APIException e) {
+        }
+    }
 
     @Test
     void givenInputSampleMatchGivenResults() throws Exception {
@@ -30,7 +37,7 @@ class PackerTest {
     @Test
     void maxPackageWeightGreaterThanLimitThrowsApiException() {
         assertThrows(APIException.class, () ->
-            Packer.result(new ArrayList<>(), Constraints.MAX_PACKAGE_WEIGHT + 0.1)
+                maxCostPackageFinder.findSolution(new ArrayList<>(), Constraints.MAX_PACKAGE_WEIGHT + 1)
         );
     }
 
@@ -42,7 +49,7 @@ class PackerTest {
         }
 
         assertThrows(APIException.class, () ->
-            Packer.result(items, Constraints.MAX_PACKAGE_WEIGHT)
+                maxCostPackageFinder.findSolution(items, Constraints.MAX_PACKAGE_WEIGHT)
         );
     }
 
@@ -52,7 +59,7 @@ class PackerTest {
             PackageItem item = new PackageItem(1, 0, Constraints.MAX_ITEM_COST + 1);
             List<PackageItem> input = Collections.singletonList(item);
 
-            Packer.result(input, 50);
+            maxCostPackageFinder.findSolution(input, 50);
 
         });
     }
@@ -63,7 +70,7 @@ class PackerTest {
             PackageItem item = new PackageItem(1, Constraints.MAX_ITEM_WEIGHT + 1, 0);
             List<PackageItem> input = Collections.singletonList(item);
 
-            Packer.result(input, 50);
+            maxCostPackageFinder.findSolution(input, 50);
 
         });
     }
@@ -72,9 +79,9 @@ class PackerTest {
     void zeroItemsReturnsNothing() throws APIException {
         List<PackageItem> emptyItemsList = Collections.emptyList();
 
-        Result result = Packer.result(emptyItemsList, Constraints.MAX_PACKAGE_WEIGHT);
+        Solution solution = maxCostPackageFinder.findSolution(emptyItemsList, Constraints.MAX_PACKAGE_WEIGHT);
 
-        assertEquals("-", result.toString());
+        assertEquals("-", solution.toString());
     }
 
     @Test
@@ -82,7 +89,7 @@ class PackerTest {
         PackageItem item = new PackageItem(1, 1, 1);
         List<PackageItem> input = Collections.singletonList(item);
 
-        Result result = Packer.result(input, Constraints.MAX_PACKAGE_WEIGHT);
+        Solution result = maxCostPackageFinder.findSolution(input, Constraints.MAX_PACKAGE_WEIGHT);
 
         assertEquals("1", result.toString());
     }
@@ -92,9 +99,9 @@ class PackerTest {
         PackageItem item = new PackageItem(1, 100, 100);
         List<PackageItem> input = Collections.singletonList(item);
 
-        Result result = Packer.result(input, 99);
+        Solution solution = maxCostPackageFinder.findSolution(input, 99);
 
-        assertEquals("-", result.toString());
+        assertEquals("-", solution.toString());
     }
 
     @Test

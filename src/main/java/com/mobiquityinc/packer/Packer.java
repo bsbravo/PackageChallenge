@@ -1,19 +1,41 @@
 package com.mobiquityinc.packer;
 
+import com.mobiquityinc.domain.DPMaxCostPackageFinder;
+import com.mobiquityinc.domain.MaxCostPackageFinder;
 import com.mobiquityinc.domain.PackageItem;
-import com.mobiquityinc.domain.Result;
-import com.mobiquityinc.util.Tuple;
+import com.mobiquityinc.domain.Solution;
 import com.mobiquityinc.exception.APIException;
 import com.mobiquityinc.io.FileReader;
 import com.mobiquityinc.io.OutputWriter;
+import com.mobiquityinc.io.Reader;
+import com.mobiquityinc.util.Tuple;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mobiquityinc.domain.Constraints.MAX_INPUT_ITEMS;
-import static com.mobiquityinc.domain.Constraints.MAX_PACKAGE_WEIGHT;
-import static java.util.Comparator.comparing;
-
+/**
+ * Method {@link #pack(String)} is the entry point method of the challenge
+ * and was given from the basic source code.
+ * <p>
+ * Method {@link DPMaxCostPackageFinder#findSolution(List, int)} is the
+ * core method to find best solution given a list of items and the package
+ * weight limit.
+ * <p>
+ * There is 100% of test coverage by unit tests and all green :)
+ * I first started building the unit tests before implementing the solution.
+ * The given example in file "Packaging-Challenge.pdf" was one my firsts unit tests.
+ * I also built tests to check the enforcement of all the constraints.
+ * I've created folder test/resources/samples to add the input files and expected output results
+ * for unit tests that compute the solutions.
+ * <p>
+ * I've created different classes to read the input, find the ideal solution and print the formatted result
+ * following the Single responsibility principle. The same principle is applied to methods inside the classes.
+ * <p>
+ * <p>
+ * That's all :) I’m eager to receive your feedback and I hope I can join Mobiquity team soon.
+ *
+ * @author Bruno Bravo
+ */
 public class Packer {
 
     private Packer() {
@@ -21,47 +43,20 @@ public class Packer {
 
     public static String pack(String filePath) throws APIException {
 
-        FileReader inputReader = new FileReader(filePath);
-        List<Result> results = new ArrayList<>();
+        Reader fileReader = new FileReader(filePath);
+        MaxCostPackageFinder finder = new DPMaxCostPackageFinder();
 
-        while (inputReader.hasNextLine()) {
-            results.add(result(inputReader.readLine()));
+        List<Solution> solutions = new ArrayList<>();
+
+        while (fileReader.hasNextEntry()) {
+            Tuple<List<PackageItem>, Integer> tuple = fileReader.readNextEntry();
+            List<PackageItem> items = tuple.getValue1();
+            int packageWeightLimit = tuple.getValue2();
+
+            solutions.add(finder.findSolution(items, packageWeightLimit));
         }
 
-        return new OutputWriter().printSolution(results);
-    }
-
-    private static Result result(Tuple<List<PackageItem>, Double> tuple) throws APIException {
-        return result(tuple.getValue1(), tuple.getValue2());
-    }
-
-    public static Result result(List<PackageItem> items, double maxWeight) throws APIException {
-
-        if(items.size() > MAX_INPUT_ITEMS) {
-            throw new APIException(String.format("There might be up to %d items you need to choose from but found %d items", MAX_INPUT_ITEMS, items.size()));
-        }
-
-        if(maxWeight > MAX_PACKAGE_WEIGHT) {
-            throw new APIException(String.format("Max weight that a package can take is %f but found that input package can take %f", MAX_PACKAGE_WEIGHT, maxWeight));
-        }
-
-        List<Result> possibleSolutions = new ArrayList<>();
-        possibleSolutions.add(new Result());
-
-        items.forEach(actual -> {
-            List<Result> newSolutions = new ArrayList<>();
-            possibleSolutions.forEach(r -> {
-                if (r.getTotalWeight() + actual.getWeight() <= maxWeight) {
-                    Result newResult = r.add(actual);
-                    newSolutions.add(newResult);
-                }
-            });
-            possibleSolutions.addAll(newSolutions);
-        });
-
-        return possibleSolutions.parallelStream().max(
-                comparing(Result::getTotalCost).thenComparing(comparing(Result::getTotalWeight).reversed())
-        ).get();
+        return new OutputWriter().formatSolutions(solutions);
     }
 
 }

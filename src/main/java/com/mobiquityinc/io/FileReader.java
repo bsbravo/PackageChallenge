@@ -1,8 +1,8 @@
 package com.mobiquityinc.io;
 
 import com.mobiquityinc.domain.PackageItem;
-import com.mobiquityinc.util.Tuple;
 import com.mobiquityinc.exception.APIException;
+import com.mobiquityinc.util.Tuple;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,33 +26,29 @@ public class FileReader implements Reader {
     }
 
     @Override
-    public boolean hasNextLine() {
+    public boolean hasNextEntry() {
         return scanner.hasNextLine();
     }
 
     @Override
-    public Tuple<List<PackageItem>, Double> readLine() throws APIException {
-        if (scanner.hasNextLine()) {
-            String[] line = scanner.nextLine().split(":");
-            if(line.length < 2) {
-                return new Tuple<>(Collections.emptyList(), 0d);
-            }
-            double maxWeight = Double.parseDouble(line[0]);
-            List<PackageItem> items = new ArrayList<>();
-
-
-            Pattern p = Pattern.compile("\\((.*?)\\)");
-            Matcher m = p.matcher(line[1].trim());
-            while (m.find()) {
-                String[] item = m.group(1).split(",");
-                PackageItem packageItem = new PackageItem(Integer.parseInt(item[0].trim()),
-                        Double.parseDouble(item[1].trim()),
-                        Double.parseDouble(item[2].trim().replaceAll("€", "")));
-                items.add(packageItem);
-            }
-            return new Tuple<>(items, maxWeight);
+    public Tuple<List<PackageItem>, Integer> readNextEntry() throws APIException {
+        String[] line = scanner.nextLine().split(":");
+        if (line.length < 2) {
+            return new Tuple<>(Collections.emptyList(), 0);
         }
-        return null;
+        int maxWeight = Integer.parseInt(line[0].trim());
+        List<PackageItem> items = new ArrayList<>();
+
+        Pattern p = Pattern.compile("\\((.*?)\\)");
+        Matcher m = p.matcher(line[1].trim());
+        while (m.find()) {
+            String[] item = m.group(1).split(",");
+            PackageItem packageItem = new PackageItem(Integer.parseInt(item[0].trim()),
+                    Double.parseDouble(item[1].trim()),
+                    Double.parseDouble(item[2].trim().replaceAll("€", "")));
+            items.add(packageItem);
+        }
+        return new Tuple<>(items, maxWeight);
     }
 
 }

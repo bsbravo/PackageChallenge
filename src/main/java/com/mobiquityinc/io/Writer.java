@@ -1,11 +1,11 @@
 package com.mobiquityinc.io;
 
-import com.mobiquityinc.domain.Result;
+import com.mobiquityinc.domain.Solution;
 
 import java.util.List;
 
 public interface Writer {
 
-    String printSolution(List<Result> results);
+    String formatSolutions(List<Solution> solutions);
 
 }
