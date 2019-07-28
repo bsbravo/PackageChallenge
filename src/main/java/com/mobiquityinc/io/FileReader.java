@@ -36,7 +36,7 @@ public class FileReader implements Reader {
         if (line.length < 2) {
             return new Tuple<>(Collections.emptyList(), 0);
         }
-        int maxWeight = Integer.parseInt(line[0].trim());
+        int packageWeightLimit = Integer.parseInt(line[0].trim());
         List<PackageItem> items = new ArrayList<>();
 
         Pattern p = Pattern.compile("\\((.*?)\\)");
@@ -48,7 +48,7 @@ public class FileReader implements Reader {
                     Double.parseDouble(item[2].trim().replaceAll("€", "")));
             items.add(packageItem);
         }
-        return new Tuple<>(items, maxWeight);
+        return new Tuple<>(items, packageWeightLimit);
     }
 
 }

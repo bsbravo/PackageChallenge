@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Domain object the store the items of a (possible) solution.
+ * Domain object that stores the items of a solution.
  */
 public class Solution {
 
@@ -23,9 +23,9 @@ public class Solution {
     }
 
     public Solution add(PackageItem item) {
-        List<PackageItem> newList = new ArrayList<>(items);
-        newList.add(item);
-        return new Solution(newList, totalWeight + item.getWeight(), totalCost + item.getCost());
+        List<PackageItem> newListItems = new ArrayList<>(items);
+        newListItems.add(item);
+        return new Solution(newListItems, totalWeight + item.getWeight(), totalCost + item.getCost());
     }
 
     public double getTotalWeight() {

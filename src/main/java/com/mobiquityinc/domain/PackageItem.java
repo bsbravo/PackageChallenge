@@ -2,10 +2,12 @@ package com.mobiquityinc.domain;
 
 import com.mobiquityinc.exception.APIException;
 
-import static com.mobiquityinc.domain.Constraints.MAX_ITEM_COST;
-import static com.mobiquityinc.domain.Constraints.MAX_ITEM_WEIGHT;
+import static com.mobiquityinc.domain.Constraints.*;
 
 public class PackageItem {
+
+    private static final String ERROR_MSG_MAX_WEIGHT_ITEM = "Max weight of an item is %.2f. Passed %.2f from item index %d.";
+    private static final String ERROR_MSG_MAX_ITEM_COST = "Max cost of an item is %.2f. Passed value %.2f from item index %d.";
 
     private int index;
     private double weight;
@@ -21,17 +23,11 @@ public class PackageItem {
     }
 
     private void checkMaxItemWeight(int index, double weight) throws APIException {
-        checkMaxValue(index, weight, MAX_ITEM_WEIGHT, "Max weight of an item is %f. Passed %f from item index %d.");
+        checkMaxValue(index, weight, MAX_ITEM_WEIGHT, ERROR_MSG_MAX_WEIGHT_ITEM);
     }
 
     private void checkMaxItemCost(int index, double cost) throws APIException {
-        checkMaxValue(index, cost, MAX_ITEM_COST, "Max cost of an item is %f. Passed %f from item index %d.");
-    }
-
-    private void checkMaxValue(int index, double actual, double max, String errorMessage) throws APIException {
-        if (actual > max) {
-            throw new APIException(String.format(errorMessage, max, actual, index));
-        }
+        checkMaxValue(index, cost, MAX_ITEM_COST, ERROR_MSG_MAX_ITEM_COST);
     }
 
     public int getIndex() {
