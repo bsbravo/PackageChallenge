@@ -4,10 +4,10 @@ import com.mobiquityinc.exception.APIException;
 
 public class Constraints {
 
-    public static int MAX_PACKAGE_WEIGHT = 100;
-    public static double MAX_ITEM_WEIGHT = 100;
-    public static double MAX_ITEM_COST = 100;
-    public static int MAX_INPUT_ITEMS = 15;
+    public static final int MAX_PACKAGE_WEIGHT = 100;
+    public static final double MAX_ITEM_WEIGHT = 100;
+    public static final double MAX_ITEM_COST = 100;
+    public static final int MAX_INPUT_ITEMS = 15;
 
     public static void checkMaxValue(int actual, int max, String errorMessage) throws APIException {
         if (actual > max) {

@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Method {@link #pack(String)} is the entry point method of the challenge and was given from the basic source code.
+ * Method {@link #pack(String)} is the entry point of the challenge and was given from the basic source code.
  * <p>
  * Method {@link DPMaxPackageCostFinder#findSolution(List, int)} is the core method to find best solution given a list
  * of items and the package weight limit. There are comments on that method explaining the approach taken as well the

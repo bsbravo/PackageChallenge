@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PackerTest {
 
-    private MaxPackageCostFinder maxPackageCostFinder = new DPMaxPackageCostFinder();
+    private final MaxPackageCostFinder maxPackageCostFinder = new DPMaxPackageCostFinder();
 
     @Test
     void inputExampleMatchGivenResults() throws Exception {

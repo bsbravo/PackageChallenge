@@ -27,7 +27,7 @@ public class DPMaxPackageCostFinder implements MaxPackageCostFinder {
      * <p>
      * It was used Dynamic Programming to optimize the time complexity and avoid calculating all different combinations
      * of items. We first resolve the problem for smaller subsets and then use those calculated solutions
-     * to find the solution for the next steps untile we find the final solution.
+     * to find the solution for the next steps until we find the final solution.
      * <p>
      * It was assumed that the weight of an item is a decimal number with two decimal places.
      * <p>
