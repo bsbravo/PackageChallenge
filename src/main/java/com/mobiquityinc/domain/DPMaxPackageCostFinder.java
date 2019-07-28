@@ -77,26 +77,27 @@ public class DPMaxPackageCostFinder implements MaxPackageCostFinder {
         }
 
         for (int i = 1; i <= items.size(); i++) {
+            PackageItem item = items.get(i - 1);
             for (int w = 100; w <= maxPackageWeightLimit; w++) {
-                PackageItem item = items.get(i - 1);
                 Solution previousSolution = solutions[i - 1][w];
                 int wi = (int) (item.getWeight() * 100);
 
-                if (wi <= w) {
-                    double previousSolutionWeight = previousSolution.getTotalWeight();
-                    double previousSolutionCost = previousSolution.getTotalCost();
-                    Solution newPossibleSolution = solutions[i - 1][w - wi].add(item);
-                    double newPossibleSolutionCost = item.getCost() + solutions[i - 1][w - wi].getTotalCost();
-                    double newPossibleSolutionWeight = item.getWeight() + solutions[i - 1][w - wi].getTotalWeight();
+                if (wi > w) {
+                    solutions[i][w] = previousSolution;
+                    continue;
+                }
 
-                    if (newPossibleSolutionCost > previousSolutionCost) {
-                        solutions[i][w] = newPossibleSolution;
-                    } else if (newPossibleSolutionCost == previousSolutionCost &&
-                            newPossibleSolutionWeight < previousSolutionWeight) {
-                        solutions[i][w] = newPossibleSolution;
-                    } else {
-                        solutions[i][w] = previousSolution;
-                    }
+                double previousSolutionWeight = previousSolution.getTotalWeight();
+                double previousSolutionCost = previousSolution.getTotalCost();
+                Solution newPossibleSolution = solutions[i - 1][w - wi].add(item);
+                double newPossibleSolutionCost = item.getCost() + solutions[i - 1][w - wi].getTotalCost();
+                double newPossibleSolutionWeight = item.getWeight() + solutions[i - 1][w - wi].getTotalWeight();
+
+                if (newPossibleSolutionCost > previousSolutionCost) {
+                    solutions[i][w] = newPossibleSolution;
+                } else if (newPossibleSolutionCost == previousSolutionCost &&
+                        newPossibleSolutionWeight < previousSolutionWeight) {
+                    solutions[i][w] = newPossibleSolution;
                 } else {
                     solutions[i][w] = previousSolution;
                 }
