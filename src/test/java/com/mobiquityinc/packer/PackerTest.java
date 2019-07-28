@@ -29,7 +29,7 @@ class PackerTest {
     @Test
     void packageWeightGreaterThaMaxThrowsApiException() {
         assertThrows(APIException.class, () ->
-                maxPackageCostFinder.findSolution(new ArrayList<>(), Constraints.MAX_PACKAGE_WEIGHT + 1)
+                maxPackageCostFinder.findSolution(Collections.emptyList(), Constraints.MAX_PACKAGE_WEIGHT + 1)
         );
     }
 
@@ -82,20 +82,24 @@ class PackerTest {
 
     @Test
     void oneItemWithWeightLessThanPackageLimitReturnsTheItem() throws APIException {
-        PackageItem item = new PackageItem(1, 1, 1);
+        int packageWeightLimit = 100;
+        int itemWeight = packageWeightLimit - 1;
+        PackageItem item = new PackageItem(1, itemWeight, 1);
         List<PackageItem> input = Collections.singletonList(item);
 
-        Solution result = maxPackageCostFinder.findSolution(input, Constraints.MAX_PACKAGE_WEIGHT);
+        Solution result = maxPackageCostFinder.findSolution(input, packageWeightLimit);
 
         assertEquals("1", result.toString());
     }
 
     @Test
     void oneItemWithWeightGreaterThanPackageLimitReturnsNothing() throws APIException {
-        PackageItem item = new PackageItem(1, 100, Constraints.MAX_ITEM_COST);
+        int packageWeightLimit = 90;
+        int itemWeight = packageWeightLimit + 1;
+        PackageItem item = new PackageItem(1, itemWeight, Constraints.MAX_ITEM_COST);
         List<PackageItem> input = Collections.singletonList(item);
 
-        Solution solution = maxPackageCostFinder.findSolution(input, 90);
+        Solution solution = maxPackageCostFinder.findSolution(input, packageWeightLimit);
 
         assertEquals("-", solution.toString());
     }
